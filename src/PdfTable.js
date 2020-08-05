@@ -14,13 +14,20 @@ import {
 
 export default function PdfTable() {
   const [data, setData] = useState([]);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
-    effect;
-    return () => {
-      cleanup;
+    const getData = async () => {
+      const res = await fetch('http://localhost:8080/api/employee');
+      if (!res) {
+        setError(true);
+      }
+      setData(await res.json());
     };
-  }, [input]);
+    return () => {
+      console.log('data set, at cleanup');
+    };
+  }, [data]);
 
   const printDoc = () => {
     const input = document.getElementById('pdf-elem');
@@ -61,6 +68,23 @@ export default function PdfTable() {
               </TableCell>
             </TableRow>
           </TableHead>
+          <TableBody>
+            {data.map((employee, idx) => {
+              return (
+                <TableRow key={idx}>
+                  <TableCell component="th" scope="row">
+                    {employee.id}
+                  </TableCell>
+                  <TableCell>{employee.name}</TableCell>
+                  <TableCell>{employee.age}</TableCell>
+                  <TableCell>{employee.address}</TableCell>
+                  <TableCell>{employee.city}</TableCell>
+                  <TableCell>{employee.phone}</TableCell>
+                  <TableCell>{employee.department}</TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
         </Table>
       </TableContainer>
     </div>
