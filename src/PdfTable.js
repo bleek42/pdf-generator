@@ -18,18 +18,23 @@ export default function PdfTable() {
 
   useEffect(() => {
     const getData = async () => {
-      const res = await fetch('http://localhost:8080/api/employee');
-      if (!res) {
-        setError(true);
+      try {
+        const res = await fetch('http://localhost:8080/api/employee');
+        setData(await res.json());
+      } catch (res) {
+        if (!res) {
+          setError(true);
+        }
       }
-      setData(await res.json());
-    };
-    return () => {
-      console.log('data set, at cleanup');
+      return () => {
+        console.log('data set, at cleanup');
+        getData();
+      };
     };
   }, [data]);
 
-  const printDoc = () => {
+  const printDoc = (ev) => {
+    ev.preventDefault();
     const input = document.getElementById('pdf-elem');
     html2canvas(input)
       .then((canvas) => {
@@ -69,21 +74,19 @@ export default function PdfTable() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.map((employee, idx) => {
-              return (
-                <TableRow key={idx}>
-                  <TableCell component="th" scope="row">
-                    {employee.id}
-                  </TableCell>
-                  <TableCell>{employee.name}</TableCell>
-                  <TableCell>{employee.age}</TableCell>
-                  <TableCell>{employee.address}</TableCell>
-                  <TableCell>{employee.city}</TableCell>
-                  <TableCell>{employee.phone}</TableCell>
-                  <TableCell>{employee.department}</TableCell>
-                </TableRow>
-              );
-            })}
+            {data.map((employee, idx) => (
+              <TableRow key={idx}>
+                <TableCell component="th" scope="row">
+                  {employee.id}
+                </TableCell>
+                <TableCell>{employee.name}</TableCell>
+                <TableCell>{employee.age}</TableCell>
+                <TableCell>{employee.address}</TableCell>
+                <TableCell>{employee.city}</TableCell>
+                <TableCell>{employee.phone}</TableCell>
+                <TableCell>{employee.department}</TableCell>
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
       </TableContainer>
