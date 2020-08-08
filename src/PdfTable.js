@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+// libraries and frameworks
+import React from 'react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import {
@@ -11,27 +12,11 @@ import {
   Paper,
   Button,
 } from '@material-ui/core';
+// custom hook
+import { useGetEmployees } from './hooks/useGetEmployees';
 
 export default function PdfTable() {
-  const [data, setData] = useState([]);
-  const [error, setError] = useState(false);
-
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        const res = await fetch('http://localhost:8080/api/employee');
-        setData(await res.json());
-      } catch (res) {
-        if (!res) {
-          setError(true);
-        }
-      }
-      return () => {
-        console.log('data set, at cleanup');
-        getData();
-      };
-    };
-  }, [data]);
+  const getEmployees = useGetEmployees();
 
   const printDoc = (ev) => {
     ev.preventDefault();
@@ -56,6 +41,20 @@ export default function PdfTable() {
       });
   };
 
+  if (getEmployees.loading === true) {
+    return (
+      <div>
+        <p>some text about loading</p>
+      </div>
+    );
+  }
+  if (getEmployees.error === true) {
+    return (
+      <div>
+        <p>some error text</p>
+      </div>
+    );
+  }
   return (
     <div>
       <TableContainer id="pdf-elem" className="txt" component={Paper}>
@@ -74,7 +73,7 @@ export default function PdfTable() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.map((employee, idx) => (
+            {Object.entries(getEmployees.getAll).map((employee, idx) => (
               <TableRow key={idx}>
                 <TableCell component="th" scope="row">
                   {employee.id}
