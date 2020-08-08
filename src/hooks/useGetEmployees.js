@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 
 import { API_URL, API_TOKEN } from '../config';
 
-export const useGetEmployees = (url, options) => {
+export const useGetEmployees = () => {
   const [getAll, setAll] = useState([]);
   const [getById, setById] = useState([]);
   const [loading, setLoading] = useState(null);
@@ -12,22 +12,27 @@ export const useGetEmployees = (url, options) => {
     const fetchAll = async () => {
       setLoading(true);
       try {
-        const req = options({
-          Headers: {
+        const req = {
+          headers: {
             Authorization: `Bearer ${API_TOKEN}`,
           },
-        });
-        const res = await fetch(`${API_URL}/employee`, options);
+        };
+        const res = await fetch(`${API_URL}/employee`, req);
         if (!res.ok) {
           throw new Error(`${res.status}${res.statusText}`);
         }
         const data = await res.json();
-        setAll(data);
+        if (data) {
+          console.log(data);
+          setLoading(false);
+          setError(false);
+          setAll(data);
+        }
       } catch (error) {
         setError(true);
       }
     };
     fetchAll();
-  }, [url]);
+  }, []);
   return { getAll, getById, loading, error };
 };

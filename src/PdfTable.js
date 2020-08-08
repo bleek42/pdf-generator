@@ -16,7 +16,7 @@ import {
 import { useGetEmployees } from './hooks/useGetEmployees';
 
 export default function PdfTable() {
-  const getEmployees = useGetEmployees();
+  const { getAll, getById, loading, error } = useGetEmployees();
 
   const printDoc = (ev) => {
     ev.preventDefault();
@@ -41,20 +41,21 @@ export default function PdfTable() {
       });
   };
 
-  if (getEmployees.loading === true) {
+  if (loading === true) {
     return (
       <div>
         <p>some text about loading</p>
       </div>
     );
   }
-  if (getEmployees.error === true) {
+  if (error === true) {
     return (
       <div>
         <p>some error text</p>
       </div>
     );
   }
+
   return (
     <div>
       <TableContainer id="pdf-elem" className="txt" component={Paper}>
@@ -73,7 +74,7 @@ export default function PdfTable() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {Object.entries(getEmployees.getAll).map((employee, idx) => (
+            {getAll.map((employee, idx) => (
               <TableRow key={idx}>
                 <TableCell component="th" scope="row">
                   {employee.id}
@@ -88,6 +89,9 @@ export default function PdfTable() {
             ))}
           </TableBody>
         </Table>
+        <Button onClick={printDoc} variant="contained" color="primary">
+          Generate PDF
+        </Button>
       </TableContainer>
     </div>
   );
