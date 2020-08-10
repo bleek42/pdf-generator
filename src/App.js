@@ -1,5 +1,8 @@
+// libraries and frameworks
 import React from 'react';
-import PdfTable from './PdfTable';
+import { Route, Link, Switch } from 'react-router-dom';
+// components
+import PdfTable from './components/PdfTable/PdfTable';
 
 function App() {
   return (

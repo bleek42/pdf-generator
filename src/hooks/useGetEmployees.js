@@ -4,13 +4,12 @@ import { API_URL, API_TOKEN } from '../config';
 
 export const useGetEmployees = () => {
   const [getAll, setAll] = useState([]);
-  const [getById, setById] = useState([]);
-  const [loading, setLoading] = useState(null);
+  const [getById, setById] = useState(0);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchAll = async () => {
-      setLoading(true);
       try {
         const req = {
           headers: {
@@ -29,10 +28,36 @@ export const useGetEmployees = () => {
           setAll(data);
         }
       } catch (error) {
+        setLoading(false);
         setError(true);
       }
     };
     fetchAll();
   }, []);
+
+  const fetchOne = async (idx) => {
+    try {
+      const req = {
+        headers: {
+          Authorization: `Bearer ${API_TOKEN}`,
+        },
+      };
+      const res = await fetch(`${API_URL}/employee${idx}`);
+      if (!res.ok) {
+        throw new Error(`${res.status}${res.statusText}`);
+      }
+      const data = await res.json();
+      if (data) {
+        setLoading(false);
+        setError(false);
+        setById(idx);
+      }
+    } catch (err) {
+      console.error('some error');
+      setLoading(false);
+      setError(true);
+    }
+  };
+
   return { getAll, getById, loading, error };
 };
